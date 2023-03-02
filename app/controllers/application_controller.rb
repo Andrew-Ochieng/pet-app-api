@@ -23,29 +23,47 @@ class ApplicationController < Sinatra::Base
 
   # GET ---------------------------------------------------------------------------# Add your ro utes here
   get "/pets" do
-    pets = Pet.all
-    pet.to_json
+    pets = Pet.all.to_json(include: [:pets])
   end
 
   get "/pets/:id" do
-    pet = Pet.find(params[:id])
-    pet.to_json(only: [:name, :breed, :image_url])
+    pet = Pet.find_by(id: params[:id])
+
+    if(pet.nil?)
+      status 404
+      {error: "Pet not found"}.to_json
+    else
+      pet.to_json(include: [:pets])
+    end
   end
 
   get "/users" do
-    pet.all.to_json
+    User.all.to_json(include: [:pets])
   end
 
   get "user/:id" do
-    pet = Pet.find(params[:id])
-    pet.to_json(only: [:name, :breed, :image_url])
+    user = User.find_by(id: params[:id])
+
+    if(user.nil?)
+      status 404
+      {error: "User not found"}.to_json
+    else
+      user.to_json(include: [:pets])
+    end
   end
 
 
   # POST ---------------------------------------------------------------------------
   post "/pets" do
-    pet = Pet.create(pet_params)
-    pet.to_json
+    pet = Pet.create(
+      user_id: params[:user_id],
+      name: params[:name],
+      breed: params[:breed],
+      image_url: [:image_url]
+    )
+
+    status 201
+    pet.to_json(include: [:user])
   end
 
 
@@ -53,18 +71,33 @@ class ApplicationController < Sinatra::Base
   # PATCH ---------------------------------------------------------------------------
   patch "/pets/:id" do
     pet = Pet.find_by(id: params[:id])
-    pet.update()
-    pet.to_json
+
+    if(pet.nil?)
+      status 404
+      {error: "Pet not found"}.to_json
+    else
+      pet.update(
+        user_id: params[:user_id],
+        name: params[:name],
+        breed: params[:breed],
+        image_url: [:image_url]       
+      )
+      pet.to_json
+    end
   end
-
-
 
   # DELETE ---------------------------------------------------------------------------
   delete "/pets/:id" do
-    pet = pet.find(params[:id])
-    pet.destroy
-    pet.to_json
+    pet = pet.find_by(params[:id])
+
+    if(pet.nil?)
+      status 404
+      {error: "Pet not found"}.to_json
+    else
+      pet.destroy
+      
+      status 204
+      {deleted: "Pet deleted successfully"}
+    end
   end
-
-
 end
