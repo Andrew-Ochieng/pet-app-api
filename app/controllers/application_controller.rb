@@ -26,6 +26,17 @@ class ApplicationController < Sinatra::Base
     pets = Pet.all.to_json(include: [:pets])
   end
 
+  get "/users/:id/pets" do
+    user = User.find_by(id: params[:id])
+
+    if(user.nil?)
+      status 404
+      {error: "User not found"}.to_json
+    else
+      user.pets.to_json
+    end
+  end
+
   get "/pets/:id" do
     pet = Pet.find_by(id: params[:id])
 
