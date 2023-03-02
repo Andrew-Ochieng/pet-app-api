@@ -22,10 +22,6 @@ class ApplicationController < Sinatra::Base
 
 
   # GET ---------------------------------------------------------------------------# Add your ro utes here
-  get "/" do
-    { message: "Good luck with your project!" }.to_json
-  end
-
   get "/pets" do
     pets = Pet.all
     pet.to_json
@@ -33,7 +29,7 @@ class ApplicationController < Sinatra::Base
 
   get "/pets/:id" do
     pet = Pet.find(params[:id])
-    pet.to_json(only: [:name, :topic, :details])
+    pet.to_json(only: [:name, :breed, :image_url])
   end
 
   get "/users" do
@@ -42,7 +38,7 @@ class ApplicationController < Sinatra::Base
 
   get "user/:id" do
     pet = Pet.find(params[:id])
-    pet.to_json(only: [:name, :topic, :details])
+    pet.to_json(only: [:name, :breed, :image_url])
   end
 
 
