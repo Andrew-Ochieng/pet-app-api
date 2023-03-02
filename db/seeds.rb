@@ -1,17 +1,26 @@
 puts "🌱 Seeding users ..."
 
-# Make 10 users
+puts "1. Seeding users"
+users = []
+
+#main user
+users << User.create(
+  username: "person",
+  password: "password"
+)
+
+#other users
 10.times do
-  User.create(
+  users << User.create(
       username: Faker::Name.name,
       password: Faker::Internet.password(min_length: 8)
   )
 end
 
-  # Make 50 pets
+puts "seeding pets"
 50.times do
   Pet.create(
-      user_id: user.id,
+      user_id: users.sample.id,
       name: Faker::Creature::Cat.name,
       breed: Faker::Creature::Cat.breed,
       image_url: Faker::Avatar.image(slug: "my-own-slug", size: "50x50", format: "jpg")
