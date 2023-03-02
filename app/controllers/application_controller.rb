@@ -66,6 +66,36 @@ class ApplicationController < Sinatra::Base
     pet.to_json(include: [:user])
   end
 
+  post "/login" do
+    user = User.where(["username=? and password=?", params[:username], params[:password]])[0]
+
+    if (user.nil?)
+      status 403
+      {error: "Wrong email or password"}.to_json
+    else
+      status 200
+      session[:user_id] = user.id
+      user.to_json
+    end
+  end
+
+  post "/signup" do
+    user = User.create(
+      username: params[:username],
+      email: params[:email],
+      password: params[:password]
+    )
+    
+    if (user.nil?)
+      status 403
+      {error: "Wrong email or password"}.to_json
+    else
+      status 201
+      session[:user_id] = user.id
+      user.to_json
+    end
+  end
+
 
 
   # PATCH ---------------------------------------------------------------------------
@@ -98,6 +128,16 @@ class ApplicationController < Sinatra::Base
       
       status 204
       {deleted: "Pet deleted successfully"}
+    end
+  end
+
+  delete "/logout" do
+    begin
+      session.delete :user_id
+      status 204
+    rescue ActiveRecord::RecordNotFound => e
+      status 401
+      {error: "Already logged out"}.to_json
     end
   end
 end
