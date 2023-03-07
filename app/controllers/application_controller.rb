@@ -1,5 +1,6 @@
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
+  # use Rack::Session::Cookie, :expire_after => 259200000000
   
   # To enable cross origin requests for all routes:
   set :bind, '0.0.0.0'
@@ -23,7 +24,7 @@ class ApplicationController < Sinatra::Base
 
   # GET ---------------------------------------------------------------------------# Add your ro utes here
   get "/pets" do
-    pets = Pet.all.to_json(include: [:pets])
+    pets = Pet.all.to_json()
   end
 
   get "/users/:id/pets" do
@@ -71,7 +72,7 @@ class ApplicationController < Sinatra::Base
       name: params[:name],
       breed: params[:breed],
       image_url: [:image_url]
-    )
+  )
 
     status 201
     pet.to_json(include: [:user])
@@ -137,8 +138,7 @@ class ApplicationController < Sinatra::Base
     else
       pet.destroy
       
-      status 204
-      {deleted: "Pet deleted successfully"}
+      status 204 {deleted: "Pet deleted successfully"}
     end
   end
 

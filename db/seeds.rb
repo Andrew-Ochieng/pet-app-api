@@ -18,12 +18,13 @@ users << User.create(
 end
 
 puts "seeding pets"
+pets = []
 50.times do
-  Pet.create(
-      user_id: users.sample.id,
-      name: Faker::Creature::Cat.name,
-      breed: Faker::Creature::Cat.breed,
-      image_url: Faker::Avatar.image(slug: "my-own-slug", size: "50x50", format: "jpg")
+  pets << Pet.create(
+    user_id: users.sample.id,
+    name: Faker::Creature::Cat.name,
+    breed: Faker::Creature::Cat.breed,
+    image_url: Faker::Avatar.image(slug: "my-own-slug", size: "50x50", format: "jpg")
   )
 end
 
