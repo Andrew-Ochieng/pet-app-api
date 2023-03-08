@@ -1,6 +1,6 @@
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
-  # use Rack::Session::Cookie, :expire_after => 259200000000
+  use Rack::Session::Cookie, :expire_after => 259200000000
   
   # To enable cross origin requests for all routes:
   set :bind, '0.0.0.0'
@@ -129,16 +129,28 @@ class ApplicationController < Sinatra::Base
   end
 
   # DELETE ---------------------------------------------------------------------------
-  delete "/pets/:id" do
-    pet = pet.find_by(params[:id])
+  # delete "/pets/:id" do
+  #   pet = pet.find_by(params[:id])
 
-    if(pet.nil?)
-      status 404
-      {error: "Pet not found"}.to_json
-    else
+  #   if(pet.nil?)
+  #     status 404
+  #     {error: "Pet not found"}.to_json
+  #   else
+  #     pet.destroy
+  #     status 204 {deleted: "Pet deleted successfully"}
+  #   end
+  # end
+
+  delete "/pets/:id" do
+    begin
+      # authorized
+      pet = Pet.find(params[:id])
       pet.destroy
       
-      status 204 {deleted: "Pet deleted successfully"}
+      status 204
+    rescue ActiveRecord::RecordNotFound => e
+      status 401
+      {error: "Unauthorized"}.to_json
     end
   end
 
